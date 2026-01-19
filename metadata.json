@@ -1,0 +1,5 @@
+{
+  "name": "NutriPlan Weekly",
+  "description": "A comprehensive meal planner based on strict nutritional group guidelines, allowing for weekly planning, portion control, and automated shopping list generation.",
+  "requestFramePermissions": []
+}
