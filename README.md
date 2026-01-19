@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# NutriPlan
 
-# Run and deploy your AI Studio app
+Aplicación de planificación nutricional semanal para gestionar comidas y alcanzar objetivos calóricos diarios.
 
-This contains everything you need to run your app locally.
+## Características
 
-View your app in AI Studio: https://ai.studio/apps/drive/1kjkvqJv4X8ZiQOVEpRkr77yHnB2rDn8c
+- **Planificador semanal**: Organiza tus comidas para cada día de la semana
+- **Base de datos de alimentos**: Incluye grupos como lácteos, proteínas, verduras, frutas, cereales, y más
+- **Control de porciones**: Límites diarios por grupo alimenticio
+- **Seguimiento de calorías**: Objetivo de 1500 kcal/día con distribución por comida
+- **Macronutrientes**: Visualiza proteínas, carbohidratos y grasas
+- **Lista de compras**: Genera automáticamente lista de compras basada en tu plan
+- **Editor de alimentos**: Personaliza la base de datos de alimentos
+- **Generador automático**: Crea planes aleatorios respetando las porciones
+- **Impresión**: Exporta tu plan en formato imprimible
 
-## Run Locally
+## Tecnologías
 
-**Prerequisites:**  Node.js
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide Icons
 
+## Ejecutar localmente
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Requisitos previos:** Node.js
+
+1. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+2. Ejecutar la aplicación:
+   ```bash
+   npm run dev
+   ```
+
+3. Abrir en el navegador: http://localhost:3000
+
+## Scripts disponibles
+
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Construye la aplicación para producción
+- `npm run preview` - Vista previa de la build de producción

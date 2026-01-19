@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { WeeklyPlan } from '../types';
 import { FOOD_DATABASE, getFoodById } from '../data';
-import { ShoppingBag, Copy, Printer } from 'lucide-react';
+import { Download, Printer, ArrowLeft } from 'lucide-react';
 
 interface ShoppingListProps {
   plan: WeeklyPlan;
@@ -32,72 +32,156 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ plan, onBack }) => {
       });
     });
 
-    // Sort by group then name
     return Object.values(list).sort((a, b) => {
       if (a.group !== b.group) return a.group.localeCompare(b.group);
       return a.name.localeCompare(b.name);
     });
   }, [plan]);
 
+  // Group items by food group
+  const groupedItems = useMemo(() => {
+    const groups: Record<string, typeof aggregatedList> = {};
+    aggregatedList.forEach(item => {
+      if (!groups[item.group]) {
+        groups[item.group] = [];
+      }
+      groups[item.group].push(item);
+    });
+    return groups;
+  }, [aggregatedList]);
+
+  const generateTextContent = () => {
+    let text = 'LISTA DE COMPRAS - NutriPlan\n';
+    text += '================================\n\n';
+    
+    FOOD_DATABASE.forEach(group => {
+      const items = groupedItems[group.name];
+      if (!items || items.length === 0) return;
+      
+      text += `${group.name.toUpperCase()}:\n`;
+      items.forEach(item => {
+        text += `[ ] ${item.name} (${item.count}x ${item.portion})\n`;
+      });
+      text += '\n';
+    });
+    
+    return text;
+  };
+
+  const exportToTxt = () => {
+    const text = generateTextContent();
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lista-compras-nutriplan.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const copyToClipboard = () => {
-    const text = aggregatedList.map(item => 
-      `[ ] ${item.name} (${item.count} x ${item.portion})`
-    ).join('\n');
-    navigator.clipboard.writeText(`Mi Lista de Compras - NutriPlan:\n\n${text}`);
+    const text = generateTextContent();
+    navigator.clipboard.writeText(text);
     alert('Lista copiada al portapapeles');
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-8 bg-white shadow-lg rounded-2xl my-6">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 border-b pb-4 gap-4">
+    <div className="max-w-4xl mx-auto">
+      {/* Header - hidden on print */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 print:hidden">
         <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
-            <ShoppingBag className="w-8 h-8 text-brand-500" />
-            Lista de Compras Semanal
-            </h2>
-            <p className="text-gray-500 mt-1">Basado en tu planificación actual</p>
+          <h2 className="text-xl font-semibold text-gray-800">Lista de Compras</h2>
+          <p className="text-gray-500 text-sm">Basado en tu plan semanal</p>
         </div>
-        <div className="flex gap-2">
-            <button onClick={copyToClipboard} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium">
-                <Copy className="w-4 h-4" /> Copiar
-            </button>
-            <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium">
-                <Printer className="w-4 h-4" /> Imprimir
-            </button>
-            <button onClick={onBack} className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 text-sm font-medium">
-                Volver
-            </button>
+        <div className="flex gap-2 flex-wrap">
+          <button 
+            onClick={exportToTxt} 
+            className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 bg-white hover:bg-gray-50 text-sm border border-gray-200"
+          >
+            <Download className="w-4 h-4" /> Exportar TXT
+          </button>
+          <button 
+            onClick={() => window.print()} 
+            className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 bg-white hover:bg-gray-50 text-sm border border-gray-200"
+          >
+            <Printer className="w-4 h-4" /> Imprimir
+          </button>
+          <button 
+            onClick={onBack} 
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 text-white hover:bg-gray-900 text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" /> Volver
+          </button>
         </div>
       </div>
 
+      {/* Print Header */}
+      <div className="hidden print:block text-center mb-3">
+        <h1 className="text-lg font-bold">Lista de Compras - NutriPlan</h1>
+      </div>
+
       {aggregatedList.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4 opacity-20" />
-            <p>No hay alimentos en tu plan aún.</p>
+        <div className="text-center py-12 text-gray-400 print:hidden">
+          <p>No hay alimentos en tu plan aún.</p>
+          <button onClick={onBack} className="mt-4 text-blue-600 hover:underline">
+            Ir al planificador
+          </button>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <>
+          {/* Screen view - simple grid */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 print:hidden">
             {FOOD_DATABASE.map(group => {
-                const groupItems = aggregatedList.filter(i => i.group === group.name);
-                if (groupItems.length === 0) return null;
+              const items = groupedItems[group.name];
+              if (!items || items.length === 0) return null;
 
-                return (
-                    <div key={group.name} className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <h3 className="font-bold text-brand-700 mb-3 uppercase text-xs tracking-wider">{group.name}</h3>
-                        <ul className="space-y-2">
-                            {groupItems.map((item, idx) => (
-                                <li key={idx} className="flex justify-between items-start text-sm">
-                                    <span className="text-gray-800 font-medium">{item.name}</span>
-                                    <span className="text-gray-500 text-right text-xs bg-white px-2 py-1 rounded border">
-                                        {item.count} x {item.portion}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )
+              return (
+                <div key={group.name} className="bg-white border border-gray-200 p-3">
+                  <h3 className="font-medium text-gray-700 text-sm mb-2 pb-1 border-b border-gray-100">
+                    {group.name}
+                  </h3>
+                  <ul className="space-y-1">
+                    {items.map((item, idx) => (
+                      <li key={idx} className="flex justify-between text-sm">
+                        <span className="text-gray-700">{item.name}</span>
+                        <span className="text-gray-500 text-xs">
+                          {item.count}x
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
             })}
-        </div>
+          </div>
+
+          {/* Print view - 3 columns, minimal */}
+          <div className="hidden print:block shopping-print">
+            {FOOD_DATABASE.map(group => {
+              const items = groupedItems[group.name];
+              if (!items || items.length === 0) return null;
+
+              return (
+                <div key={group.name} className="group-section mb-3">
+                  <h3 className="font-bold text-xs uppercase border-b border-gray-400 mb-1 pb-0.5">
+                    {group.name}
+                  </h3>
+                  <ul className="text-xs">
+                    {items.map((item, idx) => (
+                      <li key={idx} className="flex gap-1">
+                        <span className="shrink-0">☐</span>
+                        <span>{item.name}</span>
+                        <span className="text-gray-600 ml-auto">({item.count}x {item.portion})</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

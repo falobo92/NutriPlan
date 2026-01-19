@@ -4,24 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="https://lucide.dev/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NutriPlan Semanal</title>
+    <title>NutriPlan</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            colors: {
-              brand: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1',
-              }
+              sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
             }
           }
         }
@@ -29,32 +20,219 @@
     </script>
     <style>
       body {
-        background-color: #f8fafc;
+        background-color: #fafafa;
       }
-      /* Custom scrollbar for tables */
-      .custom-scrollbar::-webkit-scrollbar {
-        height: 8px;
-        width: 8px;
+      .text-2xs {
+        font-size: 0.625rem;
+        line-height: 0.85rem;
       }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f5f9;
+      .text-3xs {
+        font-size: 0.5rem;
+        line-height: 0.65rem;
       }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      
+      /* ========== PRINT - SINGLE PAGE ONLY ========== */
+      @media print {
+        @page {
+          size: 11in 8.5in; /* letter landscape */
+          margin: 0.25in;
+        }
+        
+        *, *::before, *::after {
+          box-sizing: border-box !important;
+        }
+        
+        html {
+          width: 10.5in !important;
+          height: 8in !important;
+          overflow: hidden !important;
+        }
+        
+        body {
+          width: 10.5in !important;
+          height: 8in !important;
+          max-height: 8in !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          background: white !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        
+        #root {
+          width: 100% !important;
+          height: 100% !important;
+          max-height: 8in !important;
+          overflow: hidden !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        
+        #root > div {
+          height: 100% !important;
+          max-height: 100% !important;
+          overflow: hidden !important;
+        }
+        
+        main {
+          height: 100% !important;
+          max-height: 100% !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+        
+        main > div {
+          height: 100% !important;
+          max-height: 100% !important;
+          overflow: hidden !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 0 !important;
+        }
+        
+        .print\\:hidden {
+          display: none !important;
+        }
+        
+        .print\\:block {
+          display: block !important;
+        }
+        
+        /* Print header */
+        .print-header {
+          flex-shrink: 0 !important;
+          height: 0.3in !important;
+          text-align: center !important;
+          margin-bottom: 0.05in !important;
+        }
+        
+        .print-header h1 {
+          font-size: 11pt !important;
+          font-weight: 600 !important;
+          margin: 0 !important;
+          line-height: 1.2 !important;
+        }
+        
+        /* Plan Grid */
+        .plan-grid {
+          flex: 1 !important;
+          width: 100% !important;
+          height: calc(100% - 0.35in) !important;
+          max-height: calc(100% - 0.35in) !important;
+          overflow: hidden !important;
+          border: 1px solid #374151 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+        }
+        
+        .plan-grid table {
+          width: 100% !important;
+          height: 100% !important;
+          border-collapse: collapse !important;
+          table-layout: fixed !important;
+        }
+        
+        .plan-grid thead {
+          background: #e5e7eb !important;
+        }
+        
+        .plan-grid th {
+          padding: 3px 2px !important;
+          font-size: 7pt !important;
+          font-weight: 600 !important;
+          border: 1px solid #6b7280 !important;
+          text-align: center !important;
+          color: #1f2937 !important;
+        }
+        
+        .plan-grid tbody tr {
+          height: auto !important;
+        }
+        
+        .plan-grid td {
+          padding: 2px !important;
+          border: 1px solid #9ca3af !important;
+          vertical-align: top !important;
+          font-size: 6pt !important;
+          line-height: 7pt !important;
+          overflow: hidden !important;
+        }
+        
+        .plan-grid .text-2xs {
+          font-size: 6pt !important;
+          line-height: 7pt !important;
+        }
+        
+        .plan-grid .text-3xs {
+          font-size: 5pt !important;
+          line-height: 6pt !important;
+        }
+        
+        .plan-grid .bg-blue-50 {
+          background: #dbeafe !important;
+          padding: 1px 2px !important;
+          margin-bottom: 1px !important;
+        }
+        
+        .plan-grid .bg-gray-50 {
+          background: #f9fafb !important;
+        }
+        
+        .plan-grid .bg-gray-100 {
+          background: #f3f4f6 !important;
+        }
+        
+        .plan-grid .min-h-12 {
+          min-height: 0 !important;
+        }
+        
+        /* Hide interactive elements */
+        button {
+          display: none !important;
+        }
+        
+        /* Colors */
+        .text-green-600 { color: #16a34a !important; }
+        .text-amber-600 { color: #d97706 !important; }
+        .text-red-600 { color: #dc2626 !important; }
+        .text-gray-400 { color: #9ca3af !important; }
+        .text-gray-500 { color: #6b7280 !important; }
+        .text-gray-600 { color: #4b5563 !important; }
+        .text-gray-800 { color: #1f2937 !important; }
+        
+        /* Force single page */
+        .space-y-3 > * + * {
+          margin-top: 0 !important;
+        }
+        
+        /* Shopping list */
+        .shopping-print {
+          column-count: 3 !important;
+          column-gap: 0.15in !important;
+          font-size: 8pt !important;
+          height: 100% !important;
+        }
+        .shopping-print .group-section {
+          break-inside: avoid !important;
+          margin-bottom: 0.08in !important;
+        }
+        
+        /* Ensure colors print */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

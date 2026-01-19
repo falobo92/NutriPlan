@@ -4,6 +4,11 @@ export interface FoodItem {
   name: string;
   portion: string;
   notes: string;
+  // Campos nutricionales
+  calories: number;      // kcal por porción
+  protein: number;       // gramos
+  carbs: number;         // gramos
+  fat: number;           // gramos
 }
 
 export interface FoodGroup {
@@ -28,3 +33,14 @@ export type WeeklyPlan = Record<string, Record<MealTime, PlanEntry[]>>;
 export interface DailyUsage {
   [groupName: string]: number;
 }
+
+// Constantes de distribución calórica
+export const CALORIE_DISTRIBUTION: Record<MealTime, number> = {
+  'Desayuno': 0.30,
+  'Media Mañana': 0.10,
+  'Almuerzo': 0.30,
+  'Once': 0.20,
+  'Cena': 0.10
+};
+
+export const DAILY_CALORIE_TARGET = 1500;
