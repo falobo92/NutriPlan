@@ -93,28 +93,35 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
                         return (
                           <div 
                             key={entry.id} 
-                            className={`group/item flex justify-between items-center ${colors.bgLight} border-l-2 ${colors.border} px-1 py-0.5 text-2xs rounded-r transition-all hover:${colors.bg}`}
+                            className={`group/item ${colors.bgLight} border-l-2 ${colors.border} px-1 py-0.5 text-2xs rounded-r transition-all hover:${colors.bg}`}
                           >
-                            <span className={`truncate font-medium ${colors.text} leading-tight`} title={food.name}>
-                              {food.name}
-                            </span>
-                            <div className="flex gap-0.5 opacity-0 group-hover/item:opacity-100 print:hidden shrink-0">
-                              {onEditItem && (
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1 min-w-0">
+                                <span className={`truncate font-medium ${colors.text} leading-tight block`} title={food.name}>
+                                  {food.name}
+                                </span>
+                                <span className="text-3xs text-gray-500 truncate block" title={food.portion}>
+                                  {food.portion}
+                                </span>
+                              </div>
+                              <div className="flex gap-0.5 opacity-0 group-hover/item:opacity-100 print:hidden shrink-0 ml-1">
+                                {onEditItem && (
+                                  <button 
+                                    type="button"
+                                    onClick={() => onEditItem(day, meal, entry.id, usage)}
+                                    className="text-gray-400 hover:text-blue-500"
+                                  >
+                                    <Pencil className="w-2.5 h-2.5" />
+                                  </button>
+                                )}
                                 <button 
                                   type="button"
-                                  onClick={() => onEditItem(day, meal, entry.id, usage)}
-                                  className="text-gray-400 hover:text-blue-500"
+                                  onClick={() => onRemoveItem(day, meal, entry.id)}
+                                  className="text-gray-400 hover:text-red-500"
                                 >
-                                  <Pencil className="w-2.5 h-2.5" />
+                                  <Trash2 className="w-2.5 h-2.5" />
                                 </button>
-                              )}
-                              <button 
-                                type="button"
-                                onClick={() => onRemoveItem(day, meal, entry.id)}
-                                className="text-gray-400 hover:text-red-500"
-                              >
-                                <Trash2 className="w-2.5 h-2.5" />
-                              </button>
+                              </div>
                             </div>
                           </div>
                         );
