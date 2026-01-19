@@ -1,5 +1,22 @@
 import { FoodGroup } from './types';
 
+// Mapa de colores por grupo alimenticio
+export const GROUP_COLORS: Record<string, { bg: string; border: string; text: string; bgLight: string }> = {
+  'Lácteos': { bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-700', bgLight: 'bg-blue-50' },
+  'Proteínas': { bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-700', bgLight: 'bg-red-50' },
+  'Verduras': { bg: 'bg-green-100', border: 'border-green-300', text: 'text-green-700', bgLight: 'bg-green-50' },
+  'Verduras (Libre)': { bg: 'bg-emerald-100', border: 'border-emerald-300', text: 'text-emerald-700', bgLight: 'bg-emerald-50' },
+  'Frutas': { bg: 'bg-orange-100', border: 'border-orange-300', text: 'text-orange-700', bgLight: 'bg-orange-50' },
+  'Cereales/Farináceos': { bg: 'bg-amber-100', border: 'border-amber-300', text: 'text-amber-700', bgLight: 'bg-amber-50' },
+  'Pan y Galletas': { bg: 'bg-yellow-100', border: 'border-yellow-300', text: 'text-yellow-700', bgLight: 'bg-yellow-50' },
+  'Aceites y Grasas': { bg: 'bg-purple-100', border: 'border-purple-300', text: 'text-purple-700', bgLight: 'bg-purple-50' },
+};
+
+// Helper para obtener color de un grupo
+export const getGroupColor = (groupName: string) => {
+  return GROUP_COLORS[groupName] || { bg: 'bg-gray-100', border: 'border-gray-300', text: 'text-gray-700', bgLight: 'bg-gray-50' };
+};
+
 export const FOOD_DATABASE: FoodGroup[] = [
   {
     name: 'Lácteos',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DAYS_OF_WEEK, MEAL_TIMES, WeeklyPlan, DailyUsage, PlanEntry } from '../types';
-import { getFoodById, FOOD_DATABASE } from '../data';
+import { getFoodById, FOOD_DATABASE, getGroupColor } from '../data';
 import { Plus, Trash2, Zap, Pencil, Printer } from 'lucide-react';
 import { calculateDailyUsage } from '../utils';
 
@@ -58,9 +58,9 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
 
   // Desktop View - Shows ALL items
   const renderDesktop = () => (
-    <div className="hidden lg:block print:block print:flex-1 border border-gray-200 bg-white plan-grid">
+    <div className="hidden lg:block print:block print:flex-1 border border-gray-200 bg-white plan-grid rounded-lg overflow-hidden shadow-sm">
       <table className="w-full text-xs text-left table-fixed">
-        <thead className="bg-gray-100 text-gray-700 font-medium uppercase text-2xs">
+        <thead className="bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 font-medium uppercase text-2xs">
           <tr>
             <th className="p-1 border-b border-r w-20 text-center">Horario</th>
             {DAYS_OF_WEEK.map(day => (
@@ -84,17 +84,18 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
                 
                 return (
                   <td key={`${day}-${meal}`} className="p-0.5 border-r align-top group">
-                    <div className="flex flex-col gap-px min-h-12">
+                    <div className="flex flex-col gap-0.5 min-h-12">
                       {/* Show ALL items - no limit */}
                       {entries.map((entry) => {
                         const food = getFoodById(entry.foodId);
                         if (!food) return null;
+                        const colors = getGroupColor(food.group);
                         return (
                           <div 
                             key={entry.id} 
-                            className="group/item flex justify-between items-center bg-blue-50 px-1 py-px text-2xs"
+                            className={`group/item flex justify-between items-center ${colors.bgLight} border-l-2 ${colors.border} px-1 py-0.5 text-2xs rounded-r transition-all hover:${colors.bg}`}
                           >
-                            <span className="truncate font-medium text-gray-800 leading-tight" title={food.name}>
+                            <span className={`truncate font-medium ${colors.text} leading-tight`} title={food.name}>
                               {food.name}
                             </span>
                             <div className="flex gap-0.5 opacity-0 group-hover/item:opacity-100 print:hidden shrink-0">
@@ -237,8 +238,8 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
         </div>
 
         {/* Portion Status for mobile */}
-        <div className="bg-white border border-gray-200 p-2 mb-3">
-          <div className="text-xs text-gray-500 mb-1">Porciones del día:</div>
+        <div className="bg-white border border-gray-200 p-3 mb-3 rounded-lg shadow-sm">
+          <div className="text-xs text-gray-500 mb-2 font-medium">Porciones del día:</div>
           <div className="grid grid-cols-4 gap-2 text-xs">
             {portionStatus.map(s => {
               const maxVal = s.max === 'Ilimitado' ? '∞' : s.max;
@@ -261,18 +262,18 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
           {MEAL_TIMES.map(meal => {
             const mealCalories = getMealCalories(dayData[meal] || []);
             return (
-              <div key={meal} className="bg-white p-3 border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-800">
+              <div key={meal} className="bg-white p-4 border border-gray-200 rounded-lg shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-semibold text-gray-800">
                     {meal}
-                    {mealCalories > 0 && <span className="text-sm font-normal text-gray-500 ml-2">{mealCalories} kcal</span>}
+                    {mealCalories > 0 && <span className="text-sm font-normal text-gray-500 ml-2 bg-gray-100 px-2 py-0.5 rounded">{mealCalories} kcal</span>}
                   </span>
                   <button 
                     type="button"
                     onClick={() => openPicker(selectedDayMobile, meal, usage)}
-                    className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors hover:bg-blue-100"
                   >
-                    <Plus className="w-3 h-3" /> Agregar
+                    <Plus className="w-4 h-4" /> Agregar
                   </button>
                 </div>
                 <div className="space-y-1">
@@ -282,10 +283,11 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
                     dayData[meal].map(entry => {
                       const food = getFoodById(entry.foodId);
                       if (!food) return null;
+                      const colors = getGroupColor(food.group);
                       return (
-                        <div key={entry.id} className="flex justify-between items-center text-sm bg-gray-50 p-2">
+                        <div key={entry.id} className={`flex justify-between items-center text-sm ${colors.bgLight} border-l-3 ${colors.border} p-2 rounded-r`}>
                           <div>
-                            <span className="font-medium text-gray-800">{food.name}</span>
+                            <span className={`font-medium ${colors.text}`}>{food.name}</span>
                             <span className="text-xs text-gray-500 block">{food.portion} • {food.calories} kcal</span>
                           </div>
                           <div className="flex gap-1">
@@ -330,21 +332,21 @@ export const PlanGrid: React.FC<PlanGridProps> = ({
           <button 
             type="button"
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-gray-600 bg-white hover:bg-gray-50 text-sm border border-gray-200"
+            className="flex items-center gap-1.5 px-4 py-2 text-gray-600 bg-white hover:bg-gray-50 text-sm border border-gray-200 rounded-lg shadow-sm transition-all hover:shadow"
           >
             <Printer className="w-4 h-4" /> Imprimir
           </button>
           <button 
             type="button"
             onClick={onClear}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-red-600 bg-white hover:bg-red-50 text-sm border border-gray-200"
+            className="flex items-center gap-1.5 px-4 py-2 text-red-600 bg-white hover:bg-red-50 text-sm border border-red-200 rounded-lg shadow-sm transition-all hover:shadow"
           >
             <Trash2 className="w-4 h-4" /> Limpiar
           </button>
           <button 
             type="button"
             onClick={onAutoFill}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 text-white hover:bg-gray-900 text-sm"
+            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 text-sm rounded-lg shadow-sm transition-all hover:shadow-md"
           >
             <Zap className="w-4 h-4" /> Generar
           </button>
